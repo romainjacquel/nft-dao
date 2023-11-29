@@ -4,8 +4,8 @@ import __ENV__ from "@/config";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { ReactNode } from "react";
-import { hardhat } from "viem/chains";
-import { WagmiConfig, configureChains, createConfig, sepolia } from "wagmi";
+import { arbitrumSepolia, hardhat } from "viem/chains";
+import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
 
@@ -14,7 +14,7 @@ type RainbowKitWrapperProps = {
 };
 
 const config = {
-	network: [__ENV__.environment === "development" ? hardhat : sepolia],
+	network: [__ENV__.environment === "development" ? hardhat : arbitrumSepolia],
 	providers:
 		__ENV__.environment === "development"
 			? [publicProvider()]

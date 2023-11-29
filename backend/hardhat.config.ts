@@ -11,7 +11,7 @@ module.exports = {
 		sepolia: {
 			url: process.env.SEPOLIA_RPC_URL,
 			accounts: [`0x${process.env.PRIVATE_KEY}`],
-			chainId: 11155111,
+			chainId: 421614,
 			blockConfirmations: 6,
 		},
 		localhost: {
@@ -29,6 +29,9 @@ module.exports = {
 		compilers: [
 			{
 				version: "0.8.20",
+			},
+			{
+				version: "0.8.7", // For VRFv2Consumer.sol
 			},
 		],
 	},
