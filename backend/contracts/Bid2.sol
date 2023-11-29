@@ -9,7 +9,7 @@ contract Bidding is Ownable {
     uint32 public closed_bidding_end_time;
     uint8 public bidding_duration;
     uint256 public min_bid_amount;
-    uint16 public delay_bettween_biddings;
+    uint32 public delay_bettween_biddings;
 
     Bidder[] public winning_bidders;
     BiddingStatus public bidding_status;
@@ -41,37 +41,31 @@ contract Bidding is Ownable {
     function startBidding() public onlyOwner {
         require(
             bidding_status == BiddingStatus.CLOSED,
-            "Bidding is still open"
+            "Bidding already in progress"
         );
 
-        if (closed_bidding_end_time == 0) {
-            closed_bidding_end_time =
-                bidding_end_time +
-                delay_bettween_biddings;
-        } else {
-            require(
-                closed_bidding_end_time < block.timestamp,
-                "Bidding is still closed"
-            );
-        }
-        bidding_end_time = uint32(block.timestamp + (bidding_duration * 60)); // in minutes, pass this in days for production
+        uint32 _biding_end_time = uint32(
+            block.timestamp + (bidding_duration * 60)
+        );
+        uint32 _closed_bidding_end_time = _biding_end_time +
+            delay_bettween_biddings;
+
+        require(
+            closed_bidding_end_time < block.timestamp,
+            "Bidding is still closed"
+        );
+
+        closed_bidding_end_time = _closed_bidding_end_time;
+        bidding_end_time = _biding_end_time;
         bidding_status = BiddingStatus.OPEN;
     }
 
     function endBidding() external onlyOwner {
         require(
             bidding_status == BiddingStatus.OPEN,
-            "Bidding is still closed"
+            "Bidding is alreay closed"
         );
-        require(
-            bidding_end_time < block.timestamp,
-            "Bidding is still not finished"
-        );
-        closed_bidding_end_time = uint32(
-            block.timestamp +
-                (bidding_duration * 60) +
-                (delay_bettween_biddings * 2)
-        );
+        require(bidding_end_time < block.timestamp, "Bidding is still closed");
         bidding_status = BiddingStatus.CLOSED;
     }
 
