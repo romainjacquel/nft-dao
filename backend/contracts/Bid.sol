@@ -3,104 +3,103 @@ pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract BiddingAuction is Ownable {
-    uint256 public constant NUM_WINNERS = 100;
-    uint256 public constant AUCTION_DURATION = 1 hours;
-    uint256 public constant DELAY_BETWEEN_AUCTIONS = 10 minutes;
+contract Bidding is Ownable {
+    uint32 public max_winners;
+    uint32 public bidding_end_time;
+    uint32 public closed_bidding_end_time;
+    uint8 public bidding_duration;
+    uint256 public min_bid_amount;
+    uint32 public delay_bettween_biddings;
 
-    uint256 public auctionEndTime;
-    uint256 public bidCount;
-    uint256[NUM_WINNERS] public highestBids;
-    address[NUM_WINNERS] public highestBidders;
+    Bidder[] public winning_bidders;
+    BiddingStatus public bidding_status;
 
-    bytes32 internal keyHash;
-    uint256 internal fee;
-
-    event AuctionEnded(uint256[] winningBids, address[] winningBidders);
-
-    modifier auctionOpen() {
-        require(block.timestamp < auctionEndTime, "Auction is closed");
-        _;
+    enum BiddingStatus {
+        OPEN,
+        CLOSED
     }
 
-    modifier onlyAfterAuctionEnd() {
-        require(block.timestamp >= auctionEndTime, "Auction is still open");
-        _;
+    struct Bidder {
+        address bidder_address;
+        uint256 bid_amount;
     }
 
-    constructor() Ownable(msg.sender) {
-        // Initialize auction end time
-        startNewAuction();
+    constructor(
+        uint8 _bidding_duration,
+        uint8 _delay_bettween_biddings,
+        uint32 _max_winners
+    ) Ownable(msg.sender) {
+        bidding_duration = _bidding_duration;
+        min_bid_amount = 1 ether;
+        max_winners = _max_winners;
+        delay_bettween_biddings = _delay_bettween_biddings;
+        bidding_status = BiddingStatus.CLOSED;
+        // Start bidding
+        startBidding();
     }
 
-    function placeBid() external payable auctionOpen {
+    function startBidding() public onlyOwner {
         require(
-            msg.value > highestBids[NUM_WINNERS - 1],
-            "Bid amount is too low"
+            bidding_status == BiddingStatus.CLOSED,
+            "Bidding already in progress"
         );
 
-        // Add the bid to the list and sort
-        highestBids[NUM_WINNERS - 1] = msg.value;
-        highestBidders[NUM_WINNERS - 1] = msg.sender;
+        uint32 _biding_end_time = uint32(
+            block.timestamp + (bidding_duration * 60)
+        );
+        uint32 _closed_bidding_end_time = _biding_end_time +
+            delay_bettween_biddings;
 
-        for (uint256 i = NUM_WINNERS - 2; i >= 0; i--) {
-            if (highestBids[i] < highestBids[i + 1]) {
-                (highestBids[i], highestBids[i + 1]) = (
-                    highestBids[i + 1],
-                    highestBids[i]
-                );
-                (highestBidders[i], highestBidders[i + 1]) = (
-                    highestBidders[i + 1],
-                    highestBidders[i]
-                );
-            } else {
-                break;
+        require(
+            closed_bidding_end_time < block.timestamp,
+            "Bidding is still closed"
+        );
+
+        closed_bidding_end_time = _closed_bidding_end_time;
+        bidding_end_time = _biding_end_time;
+        bidding_status = BiddingStatus.OPEN;
+    }
+
+    function endBidding() external onlyOwner {
+        require(
+            bidding_status == BiddingStatus.OPEN,
+            "Bidding is alreay closed"
+        );
+        require(bidding_end_time < block.timestamp, "Bidding is still closed");
+        bidding_status = BiddingStatus.CLOSED;
+    }
+
+    function setBidding() external payable {
+        require(!alreadyBid(), "You already bid");
+        require(
+            bidding_status == BiddingStatus.OPEN,
+            "Bidding is still closed"
+        );
+        require(bidding_end_time > block.timestamp, "Bidding time is over"); // to remove if the automasisation is done.
+        require(msg.value >= min_bid_amount, "Bid amount is too low");
+
+        if (winning_bidders.length < max_winners) {
+            winning_bidders.push(Bidder(msg.sender, msg.value));
+        } else {
+            for (uint32 i = 0; i < max_winners; i++) {
+                if (winning_bidders[i].bid_amount < msg.value) {
+                    (bool success, ) = payable(
+                        winning_bidders[i].bidder_address
+                    ).call{value: winning_bidders[i].bid_amount}("");
+                    require(success, "Transfer failed.");
+                    winning_bidders[i] = Bidder(msg.sender, msg.value);
+                    break;
+                }
             }
         }
-
-        // Increment bid count
-        bidCount++;
     }
 
-    function endAuction() external onlyOwner onlyAfterAuctionEnd {
-        // Emit event with winning bids and bidders
-        uint256[] memory winningBids = new uint256[](NUM_WINNERS);
-        for (uint256 i = 0; i < NUM_WINNERS; i++) {
-            winningBids[i] = highestBids[i];
+    function alreadyBid() internal view returns (bool) {
+        for (uint32 i = 0; i < winning_bidders.length; i++) {
+            if (winning_bidders[i].bidder_address == msg.sender) {
+                return true;
+            }
         }
-        address[] memory winningBidders = new address[](NUM_WINNERS);
-        for (uint256 i = 0; i < NUM_WINNERS; i++) {
-            winningBidders[i] = highestBidders[i];
-        }
-        emit AuctionEnded(winningBids, winningBidders);
-
-        // Start a new auction after the delay
-        startNewAuction();
+        return false;
     }
-
-    function startNewAuction() internal {
-        auctionEndTime =
-            block.timestamp +
-            AUCTION_DURATION +
-            DELAY_BETWEEN_AUCTIONS;
-
-        // Initialize the highest bids array
-        for (uint256 i = 0; i < NUM_WINNERS; i++) {
-            highestBids[i] = 0;
-            highestBidders[i] = address(0);
-        }
-
-        // Reset bid count
-        bidCount = 0;
-    }
-
-    // function getCurrentTime() public returns (bytes32 requestId) {
-    //     return requestRandomness(keyHash, fee);
-    // }
-
-    // function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-    //     // Not used in this example, but you can use randomness for more advanced time calculations if needed
-    //     // For simplicity, the auction end time is updated in the startNewAuction function
-    //     // You may adjust this function based on your specific requirements
-    // }
 }
