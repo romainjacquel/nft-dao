@@ -21,9 +21,25 @@ module.exports = {
 	},
 	gasReporter: {
 		enabled: true,
+		currency: "USD",
+	},
+	sourcify: {
+		enabled: false,
 	},
 	etherscan: {
-		apiKey: process.env.ETHERSCAN_API_KEY,
+		apiKey: {
+			arbitrumSepolia: process.env.ARBISCAN_API_KEY,
+		},
+		customChains: [
+			{
+				network: "arbitrumSepolia",
+				chainId: 421614,
+				urls: {
+					apiURL: "https://sepolia.arbiscan.io/api",
+					browserURL: "https://sepolia.arbiscan.io",
+				},
+			},
+		],
 	},
 	solidity: {
 		compilers: [

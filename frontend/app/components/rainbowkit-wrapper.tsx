@@ -13,12 +13,17 @@ type RainbowKitWrapperProps = {
 	children: ReactNode;
 };
 
+// const config = {
+// 	network: [__ENV__.environment === "development" ? hardhat : arbitrumSepolia],
+// 	providers:
+// 		__ENV__.environment === "development"
+// 			? [publicProvider()]
+// 			: [infuraProvider({ apiKey: __ENV__.infuraApiKey }), publicProvider()],
+// };
+
 const config = {
-	network: [__ENV__.environment === "development" ? hardhat : arbitrumSepolia],
-	providers:
-		__ENV__.environment === "development"
-			? [publicProvider()]
-			: [infuraProvider({ apiKey: __ENV__.infuraApiKey }), publicProvider()],
+	network: [arbitrumSepolia],
+	providers: [infuraProvider({ apiKey: __ENV__.infuraApiKey }), publicProvider()],
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: Hard to type, need to fix this later
