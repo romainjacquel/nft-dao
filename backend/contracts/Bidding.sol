@@ -119,6 +119,7 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
         return false;
     }
 
+    // Remove later if unused
     function stringAreEquals(
         string memory a,
         string memory b
