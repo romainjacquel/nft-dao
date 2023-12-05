@@ -1,3 +1,5 @@
+import { isDevelopment } from "./is-development";
+
 export const CONTRACT_ABI = [
 	{
 		inputs: [
@@ -286,7 +288,9 @@ export const CONTRACT_ABI = [
 	},
 ];
 
-export const CONTRACT_ADDRESS = "0x86C03E88900820bD0e9f1f57caC0fa9E01e8f760";
+export const CONTRACT_ADDRESS = isDevelopment()
+	? "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+	: "0x86C03E88900820bD0e9f1f57caC0fa9E01e8f760";
 
 type BaseConfigType = {
 	address: `0x${string}`;

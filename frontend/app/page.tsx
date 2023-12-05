@@ -1,11 +1,14 @@
 "use client";
 
 import { baseConfig } from "@/utils/contract";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useContractEvent, useContractRead } from "wagmi";
-import { EventData } from "./types/contract-event";
+import { redirect } from "next/navigation";
+import { useLayoutEffect } from "react";
+import { useContractRead } from "wagmi";
+import NotConnected from "./components/not-connected";
+import useConnectedWallet from "./hooks/use-connected-wallet";
 
 export default function Home() {
+	const wallet = useConnectedWallet();
 	const { data: biddingStatus } = useContractRead({
 		...baseConfig,
 		functionName: "biddingStatus",
@@ -14,30 +17,31 @@ export default function Home() {
 
 	console.log("biddingStatus", biddingStatus);
 
-	useContractEvent({
-		...baseConfig,
-		eventName: "StartBidding",
-		listener: ([data]) => {
-			const args = (data as unknown as EventData).args;
+	useLayoutEffect(() => {
+		if (wallet?.isConnected) {
+			redirect("/bidding");
+		}
+	}, [wallet?.isConnected]);
 
-			console.log(data, args);
-		},
-	});
+	// useContractEvent({
+	// 	...baseConfig,
+	// 	eventName: "StartBidding",
+	// 	listener: ([data]) => {
+	// 		const args = (data as unknown as EventData).args;
 
-	useContractEvent({
-		...baseConfig,
-		eventName: "EndBidding",
-		listener: ([data]) => {
-			const args = (data as unknown as EventData).args;
+	// 		console.log(data, args);
+	// 	},
+	// });
 
-			console.log(data, args);
-		},
-	});
+	// useContractEvent({
+	// 	...baseConfig,
+	// 	eventName: "EndBidding",
+	// 	listener: ([data]) => {
+	// 		const args = (data as unknown as EventData).args;
 
-	return (
-		<div>
-			<h1>My app</h1>
-			<ConnectButton />
-		</div>
-	);
+	// 		console.log(data, args);
+	// 	},
+	// });
+
+	return <NotConnected />;
 }

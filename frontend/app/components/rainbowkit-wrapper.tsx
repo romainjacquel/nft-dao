@@ -1,6 +1,7 @@
 "use client";
 
 import __ENV__ from "@/config";
+import { isDevelopment } from "@/utils/is-development";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { ReactNode } from "react";
@@ -13,17 +14,9 @@ type RainbowKitWrapperProps = {
 	children: ReactNode;
 };
 
-// const config = {
-// 	network: [__ENV__.environment === "development" ? hardhat : arbitrumSepolia],
-// 	providers:
-// 		__ENV__.environment === "development"
-// 			? [publicProvider()]
-// 			: [infuraProvider({ apiKey: __ENV__.infuraApiKey }), publicProvider()],
-// };
-
 const config = {
-	network: [arbitrumSepolia],
-	providers: [infuraProvider({ apiKey: __ENV__.infuraApiKey }), publicProvider()],
+	network: [isDevelopment() ? hardhat : arbitrumSepolia],
+	providers: isDevelopment() ? [publicProvider()] : [infuraProvider({ apiKey: __ENV__.infuraApiKey }), publicProvider()],
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: Hard to type, need to fix this later
