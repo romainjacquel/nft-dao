@@ -25,7 +25,9 @@ const RootLayout = ({ children }: RootLayoutProps) => (
 				<RainbowKitWrapper>
 					<AppContextWrapper>
 						<Header />
-						<Container maxW="70%">{children}</Container>
+						<Container maxW="70%" p={4}>
+							{children}
+						</Container>
 					</AppContextWrapper>
 				</RainbowKitWrapper>
 			</ChakraUiWrapper>
