@@ -183,13 +183,6 @@ export const CONTRACT_ABI = [
 	},
 	{
 		inputs: [],
-		name: "endBidding",
-		outputs: [],
-		stateMutability: "nonpayable",
-		type: "function",
-	},
-	{
-		inputs: [],
 		name: "maxWinners",
 		outputs: [
 			{
@@ -255,13 +248,6 @@ export const CONTRACT_ABI = [
 		type: "function",
 	},
 	{
-		inputs: [],
-		name: "startBidding",
-		outputs: [],
-		stateMutability: "nonpayable",
-		type: "function",
-	},
-	{
 		inputs: [
 			{
 				internalType: "address",
@@ -300,7 +286,7 @@ export const CONTRACT_ABI = [
 	},
 ];
 
-export const CONTRACT_ADDRESS = "0xDeF8Db16d0ed1612650e88EFb0E2e5d8B2692Cf6";
+export const CONTRACT_ADDRESS = "0x86C03E88900820bD0e9f1f57caC0fa9E01e8f760";
 
 type BaseConfigType = {
 	address: `0x${string}`;

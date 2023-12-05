@@ -9,8 +9,8 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
     uint32 public biddingEndTime;
     uint32 public closedBiddingEndTime;
     uint32 public delayBettweenBiddings;
-    uint256 public minBidAmount;
     uint8 public biddingDuration;
+    uint256 public minBidAmount;
 
     Bidder[] public winningBidders;
     BiddingStatus public biddingStatus;
@@ -43,7 +43,7 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
         startBidding();
     }
 
-    function startBidding() public {
+    function startBidding() internal {
         require(
             biddingStatus == BiddingStatus.CLOSED,
             "Bidding already in progress"
@@ -66,7 +66,7 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
         emit StartBidding();
     }
 
-    function endBidding() public {
+    function endBidding() internal {
         require(
             biddingStatus == BiddingStatus.OPEN,
             "Bidding is alreay closed"
