@@ -6,6 +6,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./Bidding.sol";
 
+/**
+ * @title NFT
+ * @dev Smart contract for managing ERC-721A NFTs with additional features such as a bidding system.
+ * This contract extends ERC721A, Bidding, and Ownable contracts.
+ */
 contract NFT is ERC721A, Bidding, Ownable {
     using Strings for uint;
 
@@ -16,12 +21,20 @@ contract NFT is ERC721A, Bidding, Ownable {
 
     mapping(address => uint8) NFTsPerWallet;
 
+    /**
+     * @dev Constructor for the NFT contract.
+     * Initializes ERC721A, Ownable, and Bidding contracts with specific parameters.
+     */
     constructor()
         ERC721A("NFT-DAO", "NFD")
         Ownable(msg.sender)
         Bidding(1, 10, 1, PRICE_PER_NFT)
     {}
 
+    /**
+     * @dev Mints NFTs for the caller based on the current bidding status.
+     * @param _quantity The quantity of NFTs to mint.
+     */
     function mint(uint8 _quantity) external payable {
         require(biddingStatus == BiddingStatus.CLOSED, "Bidding still open");
         bool isWinner = false;
@@ -30,10 +43,10 @@ contract NFT is ERC721A, Bidding, Ownable {
         require(isWinner, "You are not a winner");
         require(
             NFTsPerWallet[msg.sender] + _quantity <= MAX_NFT_PER_WALLET,
-            "Too many nfts in your wallet"
+            "Too many NFTs in your wallet"
         );
-        require(totalSupply() + _quantity <= maxWinners, "Max supply exceded");
-        require(msg.value >= PRICE_PER_NFT * _quantity, "Amount to low");
+        require(totalSupply() + _quantity <= maxWinners, "Max supply exceeded");
+        require(msg.value >= PRICE_PER_NFT * _quantity, "Amount too low");
 
         NFTsPerWallet[msg.sender] += _quantity;
 
@@ -44,11 +57,19 @@ contract NFT is ERC721A, Bidding, Ownable {
         _safeMint(msg.sender, _quantity);
     }
 
-    // For reveal
+    /**
+     * @dev Sets the base URI for the NFTs.
+     * @param _baseURI The new base URI.
+     */
     function setBaseURI(string memory _baseURI) external onlyOwner {
         baseURI = _baseURI;
     }
 
+    /**
+     * @dev Returns the token URI for a given token ID.
+     * @param _tokenId The ID of the token.
+     * @return The full token URI.
+     */
     function tokenURI(
         uint _tokenId
     ) public view virtual override(ERC721A) returns (string memory) {
@@ -57,6 +78,9 @@ contract NFT is ERC721A, Bidding, Ownable {
         return string(abi.encodePacked(baseURI, _tokenId.toString(), ".json"));
     }
 
+    /**
+     * @dev Allows the contract owner to withdraw the contract's balance.
+     */
     function withdraw() external onlyOwner {
         (bool success, ) = msg.sender.call{value: address(this).balance}("");
 

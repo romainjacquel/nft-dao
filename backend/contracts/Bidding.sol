@@ -3,11 +3,16 @@ pragma solidity 0.8.20;
 
 import "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 
+/**
+ * @title Bidding
+ * @dev Smart contract for managing an automated auction with NFTs.
+ * The contract complies with the AutomationCompatibleInterface from Chainlink.
+ */
 contract Bidding is AutomationCompatibleInterface {
     uint32 maxWinners;
     uint32 public biddingEndTime;
     uint32 public closedBiddingEndTime;
-    uint32 delayBettweenBiddings;
+    uint32 delayBetweenBiddings;
     uint8 public biddingDuration;
     uint256 public minBidAmount;
 
@@ -18,31 +23,51 @@ contract Bidding is AutomationCompatibleInterface {
     event StartBidding();
     event SetBidding(uint256 bidAmount, string message);
 
+    /**
+     * @dev Enumeration representing the state of the auction.
+     * - OPEN: Auction in progress.
+     * - CLOSED: Auction closed.
+     */
     enum BiddingStatus {
         OPEN,
         CLOSED
     }
 
+    /**
+     * @dev Structure representing a bidder.
+     * - bidderAddress: Address of the bidder.
+     * - bidAmount: Amount of the bid.
+     */
     struct Bidder {
         address bidderAddress;
         uint256 bidAmount;
     }
 
+    /**
+     * @dev Constructor for the contract.
+     * @param _biddingDuration Duration of the auction in minutes.
+     * @param _delayBetweenBiddings Delay between auctions in seconds.
+     * @param _maxWinners Maximum number of winning bidders.
+     * @param _minBidAmount Minimum bid amount.
+     */
     constructor(
         uint8 _biddingDuration,
-        uint8 _delayBettweenBiddings,
+        uint8 _delayBetweenBiddings,
         uint32 _maxWinners,
         uint256 _minBidAmount
     ) {
         biddingDuration = _biddingDuration;
         minBidAmount = _minBidAmount;
         maxWinners = _maxWinners;
-        delayBettweenBiddings = _delayBettweenBiddings;
+        delayBetweenBiddings = _delayBetweenBiddings;
         biddingStatus = BiddingStatus.CLOSED;
         // Start bidding
         startBidding();
     }
 
+    /**
+     * @dev Starts a new auction.
+     */
     function startBidding() internal {
         require(
             biddingStatus == BiddingStatus.CLOSED,
@@ -52,7 +77,7 @@ contract Bidding is AutomationCompatibleInterface {
         uint32 _biddingEndTime = uint32(
             block.timestamp + (biddingDuration * 60)
         );
-        uint32 _closedBiddingEndTime = _biddingEndTime + delayBettweenBiddings;
+        uint32 _closedBiddingEndTime = _biddingEndTime + delayBetweenBiddings;
 
         require(
             closedBiddingEndTime < block.timestamp,
@@ -66,10 +91,13 @@ contract Bidding is AutomationCompatibleInterface {
         emit StartBidding();
     }
 
+    /**
+     * @dev Ends the ongoing auction.
+     */
     function endBidding() internal {
         require(
             biddingStatus == BiddingStatus.OPEN,
-            "Bidding is alreay closed"
+            "Bidding is already closed"
         );
         require(biddingEndTime < block.timestamp, "Bidding is still closed");
         biddingStatus = BiddingStatus.CLOSED;
@@ -77,13 +105,16 @@ contract Bidding is AutomationCompatibleInterface {
         emit EndBidding();
     }
 
+    /**
+     * @dev Places a bid with a specified amount.
+     */
     function setBidding() external payable {
         bool isWinner = false;
         (isWinner, ) = isWinningBidder();
 
         require(isWinner, "Your bid is already winning");
         require(biddingStatus == BiddingStatus.OPEN, "Bidding is still closed");
-        require(biddingEndTime > block.timestamp, "Bidding time is over"); // to remove if the automasisation is done.
+        require(biddingEndTime > block.timestamp, "Bidding time is over");
         require(msg.value >= minBidAmount, "Bid amount is too low");
 
         bool _isWinningBidder = false;
@@ -113,8 +144,17 @@ contract Bidding is AutomationCompatibleInterface {
         emit SetBidding(msg.value, "You are a winning bidder");
     }
 
-    function isWinningBidder() internal view returns (bool, uint32 index) {
-        bool isWinner = false;
+    /**
+     * @dev Checks if the caller is a winning bidder.
+     * @return isWinner Indicates if the caller is a winner.
+     * @return index Index of the bidder in the list of winners.
+     */
+    function isWinningBidder()
+        internal
+        view
+        returns (bool isWinner, uint32 index)
+    {
+        isWinner = false;
         uint32 winnerIndex = 0;
         for (uint32 i = 0; i < winningBidders.length; i++) {
             if (winningBidders[i].bidderAddress == msg.sender) {
@@ -125,12 +165,17 @@ contract Bidding is AutomationCompatibleInterface {
         return (isWinner, winnerIndex);
     }
 
+    /**
+     * @dev Gets the bidder with the lowest bid among the winners.
+     * @return lowestBidder The bidder with the lowest bid.
+     * @return index Index of the lowest bidder in the list.
+     */
     function getLowestBidder()
         internal
         view
-        returns (Bidder memory, uint32 index)
+        returns (Bidder memory lowestBidder, uint32 index)
     {
-        Bidder memory lowestBidder = winningBidders[0];
+        lowestBidder = winningBidders[0];
         uint32 indexLowestBidder = 0;
         for (uint32 i = 1; i < winningBidders.length; i++) {
             if (winningBidders[i].bidAmount < lowestBidder.bidAmount) {
@@ -141,6 +186,12 @@ contract Bidding is AutomationCompatibleInterface {
         return (lowestBidder, indexLowestBidder);
     }
 
+    /**
+     * @dev Checks if upkeep is needed based on the current bidding status.
+     * @param checkData Additional data for upkeep check.
+     * @return upkeepNeeded Indicates if upkeep is needed.
+     * @return performData Data to be used in the performUpkeep function.
+     */
     function checkUpkeep(
         bytes calldata checkData
     )
@@ -158,6 +209,10 @@ contract Bidding is AutomationCompatibleInterface {
         }
     }
 
+    /**
+     * @dev Performs upkeep based on the decoded performData.
+     * @param performData Data obtained from checkUpkeep.
+     */
     function performUpkeep(bytes calldata performData) external override {
         uint256 decodedValue = abi.decode(performData, (uint256));
         if (decodedValue == 0) {
