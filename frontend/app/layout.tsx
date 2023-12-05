@@ -1,3 +1,4 @@
+import { Container } from "@chakra-ui/react";
 import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReactNode } from "react";
@@ -24,7 +25,7 @@ const RootLayout = ({ children }: RootLayoutProps) => (
 				<RainbowKitWrapper>
 					<AppContextWrapper>
 						<Header />
-						{children}
+						<Container maxW="70%">{children}</Container>
 					</AppContextWrapper>
 				</RainbowKitWrapper>
 			</ChakraUiWrapper>
