@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 
-contract Bidding is Ownable, AutomationCompatibleInterface {
-    uint32 public maxWinners;
+contract Bidding is AutomationCompatibleInterface {
+    uint32 maxWinners;
     uint32 public biddingEndTime;
     uint32 public closedBiddingEndTime;
-    uint32 public delayBettweenBiddings;
+    uint32 delayBettweenBiddings;
     uint8 public biddingDuration;
     uint256 public minBidAmount;
 
@@ -32,10 +31,11 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
     constructor(
         uint8 _biddingDuration,
         uint8 _delayBettweenBiddings,
-        uint32 _maxWinners
-    ) Ownable(msg.sender) {
+        uint32 _maxWinners,
+        uint256 _minBidAmount
+    ) {
         biddingDuration = _biddingDuration;
-        minBidAmount = 1 ether;
+        minBidAmount = _minBidAmount;
         maxWinners = _maxWinners;
         delayBettweenBiddings = _delayBettweenBiddings;
         biddingStatus = BiddingStatus.CLOSED;
@@ -78,15 +78,18 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
     }
 
     function setBidding() external payable {
-        require(!alreadyBid(), "You already bid");
+        bool isWinner = false;
+        (isWinner, ) = isWinningBidder();
+
+        require(isWinner, "Your bid is already winning");
         require(biddingStatus == BiddingStatus.OPEN, "Bidding is still closed");
         require(biddingEndTime > block.timestamp, "Bidding time is over"); // to remove if the automasisation is done.
         require(msg.value >= minBidAmount, "Bid amount is too low");
 
-        bool isWinningBidder = false;
+        bool _isWinningBidder = false;
 
         if (winningBidders.length < maxWinners) {
-            isWinningBidder = true;
+            _isWinningBidder = true;
             winningBidders.push(Bidder(msg.sender, msg.value));
         } else {
             Bidder memory lowestBidder;
@@ -94,7 +97,7 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
             (lowestBidder, index) = getLowestBidder();
 
             if (lowestBidder.bidAmount < msg.value) {
-                isWinningBidder = true;
+                _isWinningBidder = true;
                 (bool success, ) = payable(lowestBidder.bidderAddress).call{
                     value: lowestBidder.bidAmount
                 }("");
@@ -103,29 +106,23 @@ contract Bidding is Ownable, AutomationCompatibleInterface {
             }
         }
 
-        if (!isWinningBidder) {
+        if (!_isWinningBidder) {
             emit SetBidding(msg.value, "You are not a winning bidder");
         }
 
         emit SetBidding(msg.value, "You are a winning bidder");
     }
 
-    function alreadyBid() internal view returns (bool) {
+    function isWinningBidder() internal view returns (bool, uint32 index) {
+        bool isWinner = false;
+        uint32 winnerIndex = 0;
         for (uint32 i = 0; i < winningBidders.length; i++) {
             if (winningBidders[i].bidderAddress == msg.sender) {
-                return true;
+                isWinner = true;
+                winnerIndex = i;
             }
         }
-        return false;
-    }
-
-    // Remove later if unused
-    function stringAreEquals(
-        string memory a,
-        string memory b
-    ) internal pure returns (bool) {
-        return (keccak256(abi.encodePacked((a))) ==
-            keccak256(abi.encodePacked((b))));
+        return (isWinner, winnerIndex);
     }
 
     function getLowestBidder()
