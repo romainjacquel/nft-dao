@@ -1,5 +1,9 @@
 import { Bidder } from "./bidder";
 
+export type MintEvent = {
+	quantity: number;
+};
+
 export type SetBiddingLoseEvent = {
 	bidAmount: number;
 	message: string;

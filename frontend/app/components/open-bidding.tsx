@@ -28,13 +28,14 @@ import {
 	useWaitForTransaction,
 } from "wagmi";
 import useNotification from "../hooks/use-notification";
-import { Bidder } from "../types/bidder";
+import useWinners from "../hooks/use-winners";
 import { EventData, SetBiddingLoseEvent, SetBiddingWinEvent } from "../types/contract-event";
 import { HeaderBidding } from "./header-bidding";
 
 export const OpenBidding = () => {
 	const [amount, setAmount] = useState("");
-	const [winningBidders, setWinningBidders] = useState<Bidder[]>([]);
+	const { winners, setWinners } = useWinners();
+	// const [winningBidders, setWinningBidders] = useState<Bidder[]>([]);
 	const notification = useNotification();
 
 	// Contract read
@@ -46,13 +47,11 @@ export const OpenBidding = () => {
 	const { data: biddingDuration } = useContractRead({
 		...baseConfig,
 		functionName: "biddingDuration",
-		watch: true,
 	});
 
 	const { data: minBidAmount } = useContractRead({
 		...baseConfig,
 		functionName: "minBidAmount",
-		watch: true,
 	});
 
 	// Prepare contract
@@ -88,7 +87,7 @@ export const OpenBidding = () => {
 
 			console.log("set bidding WIN ===>", args);
 
-			setWinningBidders(args.winningBidders);
+			setWinners?.(args.winningBidders);
 
 			return notification?.({
 				title: "Success",
@@ -163,7 +162,7 @@ export const OpenBidding = () => {
 								</Tr>
 							</Thead>
 							<Tbody>
-								{winningBidders.map((bidder) => {
+								{winners?.map((bidder) => {
 									return (
 										<Tr>
 											<Td>{bidder.bidderAddress}</Td>

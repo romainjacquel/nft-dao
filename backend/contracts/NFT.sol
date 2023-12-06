@@ -21,6 +21,8 @@ contract NFT is ERC721A, Bidding, Ownable {
 
     mapping(address => uint8) NFTsPerWallet;
 
+    event Mint(uint8 quantity);
+
     /**
      * @dev Constructor for the NFT contract.
      * Initializes ERC721A, Ownable, and Bidding contracts with specific parameters.
@@ -55,6 +57,8 @@ contract NFT is ERC721A, Bidding, Ownable {
         }
 
         _safeMint(msg.sender, _quantity);
+
+        emit Mint(_quantity);
     }
 
     /**

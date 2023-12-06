@@ -37,7 +37,7 @@ const Bidding = () => {
 		},
 	});
 
-	return biddingStatus === BiddingStatus.OPEN ? <ClosedBidding /> : <OpenBidding />;
+	return biddingStatus === BiddingStatus.OPEN ? <OpenBidding /> : <ClosedBidding />;
 };
 
 export default isAuth(Bidding);
