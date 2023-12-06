@@ -34,7 +34,7 @@ import { EventData, SetBiddingLoseEvent, SetBiddingWinEvent } from "../types/con
 import { HeaderBidding } from "./header-bidding";
 
 export const OpenBidding = () => {
-	const [amount, setAmount] = useState<string | undefined>(undefined);
+	const [amount, setAmount] = useState(parseEther(""));
 	const { winners, setWinners } = useWinners();
 	// const [winningBidders, setWinningBidders] = useState<Bidder[]>([]);
 	const notification = useNotification();
@@ -59,8 +59,10 @@ export const OpenBidding = () => {
 	const { config: setBiddingConfig } = usePrepareContractWrite({
 		...baseConfig,
 		functionName: "setBidding",
-		value: amount ? parseEther(amount) : undefined,
+		value: amount,
 	});
+
+	console.log(amount);
 
 	// Contract write
 	const setBidding = useContractWrite(setBiddingConfig);
