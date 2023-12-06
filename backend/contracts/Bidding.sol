@@ -12,16 +12,21 @@ contract Bidding is AutomationCompatibleInterface {
     uint32 maxWinners;
     uint32 public biddingEndTime;
     uint32 public closedBiddingEndTime;
-    uint32 delayBetweenBiddings;
+    uint32 public delayBetweenBiddings;
     uint8 public biddingDuration;
     uint256 public minBidAmount;
 
-    Bidder[] public winningBidders;
+    Bidder[] winningBidders;
     BiddingStatus public biddingStatus;
 
     event EndBidding();
     event StartBidding();
-    event SetBidding(uint256 bidAmount, string message);
+    event SetBiddingWin(
+        uint256 bidAmount,
+        string message,
+        Bidder[] winningBidders
+    );
+    event SetBiddingLose(uint256 bidAmount, string message);
 
     /**
      * @dev Enumeration representing the state of the auction.
@@ -61,7 +66,6 @@ contract Bidding is AutomationCompatibleInterface {
         maxWinners = _maxWinners;
         delayBetweenBiddings = _delayBetweenBiddings;
         biddingStatus = BiddingStatus.CLOSED;
-        // Start bidding
         startBidding();
     }
 
@@ -112,7 +116,7 @@ contract Bidding is AutomationCompatibleInterface {
         bool isWinner = false;
         (isWinner, ) = isWinningBidder();
 
-        require(isWinner, "Your bid is already winning");
+        require(!isWinner, "Your bid is already winning");
         require(biddingStatus == BiddingStatus.OPEN, "Bidding is still closed");
         require(biddingEndTime > block.timestamp, "Bidding time is over");
         require(msg.value >= minBidAmount, "Bid amount is too low");
@@ -137,11 +141,17 @@ contract Bidding is AutomationCompatibleInterface {
             }
         }
 
+        Bidder[] memory _winningBidders = winningBidders;
+
         if (!_isWinningBidder) {
-            emit SetBidding(msg.value, "You are not a winning bidder");
+            emit SetBiddingLose(msg.value, "You are not a winning bidder");
         }
 
-        emit SetBidding(msg.value, "You are a winning bidder");
+        emit SetBiddingWin(
+            msg.value,
+            "You are a winning bidder",
+            _winningBidders
+        );
     }
 
     /**

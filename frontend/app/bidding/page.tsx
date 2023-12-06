@@ -2,6 +2,7 @@
 
 import { baseConfig } from "@/utils/contract";
 import { useContractEvent, useContractRead } from "wagmi";
+import { ClosedBidding } from "../components/closed-bidding";
 import isAuth from "../components/is-auth";
 import { OpenBidding } from "../components/open-bidding";
 import { BiddingStatus } from "../types/bidding";
@@ -36,13 +37,7 @@ const Bidding = () => {
 		},
 	});
 
-	return biddingStatus === BiddingStatus.OPEN ? (
-		<OpenBidding />
-	) : (
-		<div>
-			<h1>Closed bidding</h1>
-		</div>
-	);
+	return biddingStatus === BiddingStatus.OPEN ? <ClosedBidding /> : <OpenBidding />;
 };
 
 export default isAuth(Bidding);
