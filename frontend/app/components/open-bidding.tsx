@@ -34,7 +34,7 @@ import { EventData, SetBiddingLoseEvent, SetBiddingWinEvent } from "../types/con
 import { HeaderBidding } from "./header-bidding";
 
 export const OpenBidding = () => {
-	const [amount, setAmount] = useState("");
+	const [amount, setAmount] = useState<string | undefined>(undefined);
 	const { winners, setWinners } = useWinners();
 	// const [winningBidders, setWinningBidders] = useState<Bidder[]>([]);
 	const notification = useNotification();
