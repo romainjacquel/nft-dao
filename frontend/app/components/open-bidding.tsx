@@ -138,7 +138,7 @@ export const OpenBidding = () => {
 							<InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
 								<FaEthereum />
 							</InputLeftElement>
-							<Input onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount in ETH" type="number" />
+							<Input onChange={(e) => setAmount(parseEther(e.target.value))} placeholder="Enter amount in ETH" type="number" />
 						</InputGroup>
 						<Button
 							isLoading={setBidding.isLoading || setBiddingTransaction.isLoading}
