@@ -1,7 +1,8 @@
 import { baseConfig } from "@/utils/contract";
 import { getFormattedDate } from "@/utils/date";
-import { Flex, Text } from "@chakra-ui/react";
+import { formatEther } from "viem";
 import { useContractRead } from "wagmi";
+import { HeaderBidding } from "./header-bidding";
 
 export const OpenBidding = () => {
 	const { data: biddingEndTime } = useContractRead({
@@ -21,13 +22,18 @@ export const OpenBidding = () => {
 		watch: true,
 	});
 
+	const HEADER_ITEMS = [
+		{ heading: "Bidding duration", text: `${Number(biddingDuration)} mn` },
+		{
+			heading: "Bidding end time",
+			text: getFormattedDate(Number(biddingEndTime)),
+		},
+		{ heading: "Min bid amount", text: `${formatEther(BigInt(Number(minBidAmount)))} ETH` },
+	];
+
 	return (
 		<>
-			<Flex as="div" align="center" justify="space-around">
-				<Text>Bidding end time: {getFormattedDate(Number(biddingEndTime))}</Text>
-				<Text>Bidding duration: {Number(biddingDuration)} mn</Text>
-				<Text>Min bid amount: {Number(minBidAmount)} wei</Text>
-			</Flex>
+			<HeaderBidding items={HEADER_ITEMS} />
 		</>
 	);
 };
