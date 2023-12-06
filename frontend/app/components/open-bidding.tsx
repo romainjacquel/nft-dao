@@ -126,7 +126,7 @@ export const OpenBidding = () => {
 		<>
 			<HeaderBidding items={HEADER_ITEMS} />
 			<SimpleGrid columns={2} spacing={10} mt={6}>
-				<Flex as="div" align="center" justify="start" direction="column" gap={4} border="1px solid red">
+				<Flex as="div" align="center" justify="start" direction="column" gap={4}>
 					<Heading as="h4" size="md">
 						Bid
 					</Heading>
@@ -148,7 +148,7 @@ export const OpenBidding = () => {
 						</Button>
 					</Flex>
 				</Flex>
-				<Flex as="div" align="center" justify="center" direction="column" gap={4} border="1px solid red">
+				<Flex as="div" align="center" justify="center" direction="column" gap={4}>
 					<Heading as="h4" size="md">
 						Winning bidders
 					</Heading>

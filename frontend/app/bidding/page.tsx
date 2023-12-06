@@ -5,10 +5,12 @@ import { useContractEvent, useContractRead } from "wagmi";
 import { ClosedBidding } from "../components/closed-bidding";
 import isAuth from "../components/is-auth";
 import { OpenBidding } from "../components/open-bidding";
+import useNotification from "../hooks/use-notification";
 import { BiddingStatus } from "../types/bidding";
 import { EventData } from "../types/contract-event";
 
 const Bidding = () => {
+	const notification = useNotification();
 	const { data: biddingStatus } = useContractRead({
 		...baseConfig,
 		functionName: "biddingStatus",
@@ -24,6 +26,11 @@ const Bidding = () => {
 			const args = (data as unknown as EventData).args;
 
 			console.log(data, args);
+			return notification?.({
+				title: "Success",
+				description: "Bidding is open",
+				status: "success",
+			});
 		},
 	});
 
@@ -34,6 +41,11 @@ const Bidding = () => {
 			const args = (data as unknown as EventData).args;
 
 			console.log(data, args);
+			return notification?.({
+				title: "Success",
+				description: "Bidding is closed",
+				status: "success",
+			});
 		},
 	});
 
