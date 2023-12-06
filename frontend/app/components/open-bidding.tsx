@@ -120,7 +120,7 @@ export const OpenBidding = () => {
 			heading: "Bidding end time",
 			text: String(new Date(Number(biddingEndTime) * 1000)),
 		},
-		{ heading: "Min bid amount", text: `${formatEther(BigInt(minBidAmount as number))} ETH` },
+		{ heading: "Min bid amount", text: `${formatEther(minBidAmount as unknown as bigint)} ETH` },
 	];
 
 	return (
@@ -167,7 +167,7 @@ export const OpenBidding = () => {
 									return (
 										<Tr key={bidder.bidderAddress}>
 											<Td>{bidder.bidderAddress}</Td>
-											<Td isNumeric>{formatEther(BigInt(bidder.bidAmount as number))}</Td>
+											<Td isNumeric>{formatEther(bidder.bidAmount as unknown as bigint)}</Td>
 										</Tr>
 									);
 								})}
