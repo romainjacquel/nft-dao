@@ -5,11 +5,13 @@ import { useContractEvent, useContractRead } from "wagmi";
 import { ClosedBidding } from "../components/closed-bidding";
 import isAuth from "../components/is-auth";
 import { OpenBidding } from "../components/open-bidding";
+import useHasMounted from "../hooks/use-has-mounted";
 import useNotification from "../hooks/use-notification";
 import { BiddingStatus } from "../types/bidding";
 import { EventData } from "../types/contract-event";
 
 const Bidding = () => {
+	const hasMounted = useHasMounted();
 	const notification = useNotification();
 	const { data: biddingStatus } = useContractRead({
 		...baseConfig,
@@ -49,7 +51,7 @@ const Bidding = () => {
 		},
 	});
 
-	return biddingStatus === BiddingStatus.OPEN ? <OpenBidding /> : <ClosedBidding />;
+	return hasMounted && (biddingStatus === BiddingStatus.OPEN ? <OpenBidding /> : <ClosedBidding />);
 };
 
 export default isAuth(Bidding);
