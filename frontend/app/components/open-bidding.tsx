@@ -1,3 +1,5 @@
+"use client";
+
 import { baseConfig } from "@/utils/contract";
 import {
 	Button,

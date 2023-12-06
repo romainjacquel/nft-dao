@@ -1,3 +1,5 @@
+"use client";
+
 import { baseConfig } from "@/utils/contract";
 import { useContractRead } from "wagmi";
 import useConnectedWallet from "../hooks/use-connected-wallet";
