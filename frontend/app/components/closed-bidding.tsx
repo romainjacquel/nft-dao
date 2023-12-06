@@ -1,6 +1,4 @@
-"use client";
 import { baseConfig } from "@/utils/contract";
-import { getFormattedDate } from "@/utils/date";
 import { useContractRead } from "wagmi";
 import useConnectedWallet from "../hooks/use-connected-wallet";
 import useWinners from "../hooks/use-winners";
@@ -24,7 +22,7 @@ export const ClosedBidding = () => {
 	});
 
 	const HEADER_ITEMS = [
-		{ heading: "Closed bidding end time", text: getFormattedDate(Number(closedBiddingEndTime)) },
+		{ heading: "Closed bidding end time", text: String(new Date(Number(closedBiddingEndTime) * 1000)) },
 		{ heading: "Closed bidding duration", text: `${Number(closedBiddingDuration)} s` },
 	];
 

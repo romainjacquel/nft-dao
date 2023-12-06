@@ -1,5 +1,4 @@
 import { baseConfig } from "@/utils/contract";
-import { getFormattedDate } from "@/utils/date";
 import {
 	Button,
 	Flex,
@@ -117,7 +116,7 @@ export const OpenBidding = () => {
 		{ heading: "Bidding duration", text: `${Number(biddingDuration)} mn` },
 		{
 			heading: "Bidding end time",
-			text: getFormattedDate(Number(biddingEndTime)),
+			text: String(new Date(Number(biddingEndTime) * 1000)),
 		},
 		{ heading: "Min bid amount", text: `${formatEther(BigInt(Number(minBidAmount)))} ETH` },
 	];
@@ -164,7 +163,7 @@ export const OpenBidding = () => {
 							<Tbody>
 								{winners?.map((bidder) => {
 									return (
-										<Tr>
+										<Tr key={bidder.bidderAddress}>
 											<Td>{bidder.bidderAddress}</Td>
 											<Td isNumeric>{formatEther(BigInt(Number(bidder.bidAmount)))}</Td>
 										</Tr>

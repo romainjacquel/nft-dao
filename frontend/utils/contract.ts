@@ -184,6 +184,19 @@ export const CONTRACT_ABI = [
 		anonymous: false,
 		inputs: [
 			{
+				indexed: false,
+				internalType: "uint8",
+				name: "quantity",
+				type: "uint8",
+			},
+		],
+		name: "Mint",
+		type: "event",
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
 				indexed: true,
 				internalType: "address",
 				name: "previousOwner",
@@ -759,7 +772,7 @@ export const CONTRACT_ABI = [
 
 export const CONTRACT_ADDRESS = isDevelopment()
 	? "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-	: "0x86C03E88900820bD0e9f1f57caC0fa9E01e8f760";
+	: "0xaC29f28f04a2863EefFFB9C8Ef8Dd401dfbE7824";
 
 type BaseConfigType = {
 	address: `0x${string}`;
