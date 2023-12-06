@@ -59,7 +59,7 @@ export const OpenBidding = () => {
 	const { config: setBiddingConfig } = usePrepareContractWrite({
 		...baseConfig,
 		functionName: "setBidding",
-		value: parseEther(amount.toString()),
+		value: amount ? parseEther(amount.toString()) : undefined,
 	});
 
 	// Contract write
