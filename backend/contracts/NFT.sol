@@ -51,9 +51,7 @@ contract NFT is ERC721A, Bidding, Ownable {
 
         NFTsPerWallet[msg.sender] += _quantity;
 
-        if (NFTsPerWallet[msg.sender] >= MAX_NFT_PER_WALLET) {
-            delete winningBidders[winnerIndex];
-        }
+        delete winningBidders[winnerIndex];
 
         _safeMint(msg.sender, _quantity);
 
