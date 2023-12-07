@@ -121,7 +121,7 @@ export const OpenBidding = () => {
 			heading: "Bidding end time",
 			text: String(new Date(Number(biddingEndTime) * 1000)),
 		},
-		{ heading: "Min bid amount", text: `${formatEther(minBidAmount as unknown as bigint)} ETH` },
+		{ heading: "Min bid amount", text: `${minBidAmount ? formatEther(minBidAmount as unknown as bigint) : "0"} ETH` },
 	];
 
 	return (
@@ -137,7 +137,15 @@ export const OpenBidding = () => {
 							<InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em">
 								<FaEthereum />
 							</InputLeftElement>
-							<Input onChange={(e) => setAmount(parseEther(e.target.value))} placeholder="Enter amount in ETH" type="number" />
+							<Input
+								onChange={(e) => {
+									if (e.target.value) {
+										setAmount(parseEther(e.target.value));
+									}
+								}}
+								placeholder="Enter amount in ETH"
+								type="number"
+							/>
 						</InputGroup>
 						<Button
 							isLoading={setBidding.isLoading || setBiddingTransaction.isLoading}
@@ -164,14 +172,16 @@ export const OpenBidding = () => {
 								</Tr>
 							</Thead>
 							<Tbody>
-								{winners?.map((bidder) => {
-									return (
-										<Tr key={bidder.bidderAddress}>
-											<Td>{bidder.bidderAddress}</Td>
-											<Td isNumeric>{formatEther(bidder.bidAmount as unknown as bigint)}</Td>
-										</Tr>
-									);
-								})}
+								{winners && winners.length > 0
+									? winners?.map((bidder) => {
+											return (
+												<Tr key={bidder.bidderAddress}>
+													<Td>{bidder.bidderAddress}</Td>
+													<Td isNumeric>{bidder.bidAmount ? formatEther(bidder.bidAmount as unknown as bigint) : "0"}</Td>
+												</Tr>
+											);
+									  })
+									: null}
 							</Tbody>
 						</Table>
 					</TableContainer>
