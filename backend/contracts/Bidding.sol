@@ -88,6 +88,16 @@ contract Bidding is AutomationCompatibleInterface {
             "Bidding is still closed"
         );
 
+        // Transfer funds to the winners of the previous auction who have minted NFTs.
+        if (winningBidders.length > 0) {
+            for (uint32 i = 0; i < winningBidders.length; i++) {
+                (bool success, ) = payable(winningBidders[i].bidderAddress)
+                    .call{value: winningBidders[i].bidAmount}("");
+                require(success, "Transfer failed.");
+            }
+            delete winningBidders;
+        }
+
         closedBiddingEndTime = _closedBiddingEndTime;
         biddingEndTime = _biddingEndTime;
         biddingStatus = BiddingStatus.OPEN;

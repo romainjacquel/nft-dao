@@ -28,7 +28,7 @@ contract NFT is ERC721A, Bidding, Ownable {
      * Initializes ERC721A, Ownable, and Bidding contracts with specific parameters.
      */
     constructor()
-        ERC721A("NFT-DAO", "NFD")
+        ERC721A("NFT-DAO2", "NFD")
         Ownable(msg.sender)
         Bidding(3, 120, 1, PRICE_PER_NFT)
     {}
@@ -48,7 +48,6 @@ contract NFT is ERC721A, Bidding, Ownable {
             "Too many NFTs in your wallet"
         );
         require(totalSupply() + _quantity <= maxWinners, "Max supply exceeded");
-        require(msg.value >= PRICE_PER_NFT * _quantity, "Amount too low");
 
         NFTsPerWallet[msg.sender] += _quantity;
 
