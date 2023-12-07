@@ -51,7 +51,7 @@ const Bidding = () => {
 		},
 	});
 
-	return hasMounted && (biddingStatus === BiddingStatus.OPEN ? <OpenBidding /> : <ClosedBidding />);
+	return hasMounted && (biddingStatus === BiddingStatus.OPEN ? <h1>OPEN BIDDING</h1> : <ClosedBidding />);
 };
 
 export default isAuth(Bidding);
