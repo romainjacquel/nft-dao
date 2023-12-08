@@ -51,6 +51,22 @@ const Bidding = () => {
 		},
 	});
 
+	// Debug for refund
+	useContractEvent({
+		...baseConfig,
+		eventName: "Refund",
+		listener: ([data]) => {
+			const args = (data as unknown as EventData).args;
+
+			console.log("Refund", data, args);
+			return notification?.({
+				title: "Success",
+				description: "Refund event",
+				status: "success",
+			});
+		},
+	});
+
 	return hasMounted && (biddingStatus === BiddingStatus.OPEN ? <OpenBidding /> : <ClosedBidding />);
 };
 

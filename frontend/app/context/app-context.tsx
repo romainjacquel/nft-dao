@@ -26,6 +26,7 @@ export function AppContextWrapper({ children }: { children: ReactNode }) {
 		...baseConfig,
 		functionName: "balanceOf",
 		args: [wallet?.address],
+		watch: true,
 	});
 
 	const value = {

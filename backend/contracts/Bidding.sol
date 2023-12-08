@@ -13,7 +13,7 @@ contract Bidding is AutomationCompatibleInterface {
     uint32 public biddingEndTime;
     uint32 public closedBiddingEndTime;
     uint32 public delayBetweenBiddings;
-    uint8 public biddingDuration;
+    uint32 public biddingDuration;
     uint256 public minBidAmount;
 
     Bidder[] winningBidders;
@@ -27,6 +27,7 @@ contract Bidding is AutomationCompatibleInterface {
         Bidder[] winningBidders
     );
     event SetBiddingLose(uint256 bidAmount, string message);
+    event Refund(address bidderAddress, uint256 bidAmount);
 
     /**
      * @dev Enumeration representing the state of the auction.
@@ -94,6 +95,12 @@ contract Bidding is AutomationCompatibleInterface {
                 (bool success, ) = payable(winningBidders[i].bidderAddress)
                     .call{value: winningBidders[i].bidAmount}("");
                 require(success, "Transfer failed.");
+                if (success) {
+                    emit Refund(
+                        winningBidders[i].bidderAddress,
+                        winningBidders[i].bidAmount
+                    );
+                }
             }
             delete winningBidders;
         }
@@ -109,11 +116,8 @@ contract Bidding is AutomationCompatibleInterface {
      * @dev Ends the ongoing auction.
      */
     function endBidding() internal {
-        require(
-            biddingStatus == BiddingStatus.OPEN,
-            "Bidding is already closed"
-        );
-        require(biddingEndTime < block.timestamp, "Bidding is still closed");
+        require(biddingStatus == BiddingStatus.OPEN, "Bidding is already open");
+        require(biddingEndTime < block.timestamp, "Bidding is still open");
         biddingStatus = BiddingStatus.CLOSED;
 
         emit EndBidding();
@@ -147,6 +151,13 @@ contract Bidding is AutomationCompatibleInterface {
                     value: lowestBidder.bidAmount
                 }("");
                 require(success, "Transfer failed.");
+                // test
+                if (success) {
+                    emit Refund(
+                        lowestBidder.bidderAddress,
+                        lowestBidder.bidAmount
+                    );
+                }
                 winningBidders[index] = Bidder(msg.sender, msg.value);
             }
         }
