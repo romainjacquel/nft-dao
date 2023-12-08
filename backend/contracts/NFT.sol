@@ -14,6 +14,7 @@ import "./Bidding.sol";
 contract NFT is ERC721A, Bidding, Ownable {
     using Strings for uint;
 
+    uint8 private constant MAX_TOTAL_SUPPLY = 10;
     uint256 private constant PRICE_PER_NFT = 0.02 ether;
     uint8 private constant MAX_NFT_PER_WALLET = 2;
     string public baseURI =
@@ -47,7 +48,10 @@ contract NFT is ERC721A, Bidding, Ownable {
             NFTsPerWallet[msg.sender] + _quantity <= MAX_NFT_PER_WALLET,
             "Too many NFTs in your wallet"
         );
-        require(totalSupply() + _quantity <= maxWinners, "Max supply exceeded");
+        require(
+            totalSupply() + _quantity <= MAX_TOTAL_SUPPLY,
+            "Max supply exceeded"
+        );
 
         NFTsPerWallet[msg.sender] += _quantity;
 
