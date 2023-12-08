@@ -93,7 +93,7 @@ contract Bidding is AutomationCompatibleInterface {
         if (winningBidders.length > 0) {
             for (uint32 i = 0; i < winningBidders.length; i++) {
                 (bool success, ) = payable(winningBidders[i].bidderAddress)
-                    .call{value: winningBidders[i].bidAmount}("");
+                    .call{value: winningBidders[i].bidAmount, gas: 30000}("");
                 require(success, "Transfer failed.");
                 if (success) {
                     emit Refund(
@@ -148,7 +148,8 @@ contract Bidding is AutomationCompatibleInterface {
             if (lowestBidder.bidAmount < msg.value) {
                 _isWinningBidder = true;
                 (bool success, ) = payable(lowestBidder.bidderAddress).call{
-                    value: lowestBidder.bidAmount
+                    value: lowestBidder.bidAmount,
+                    gas: 30000
                 }("");
                 require(success, "Transfer failed.");
                 // test

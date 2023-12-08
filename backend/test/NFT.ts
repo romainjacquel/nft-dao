@@ -242,11 +242,11 @@ describe("Bidding", () => {
 	});
 
 	describe("performUpkeep", () => {
-		it("should revert => Bidding is still closed", async () => {
+		it("should revert => Bidding is still open", async () => {
 			const { NFT } = await loadFixture(deployVotingContract);
 
 			const [, performData] = await NFT.checkUpkeep("0x");
-			await expect(NFT.performUpkeep(performData)).to.be.revertedWith("Bidding is still closed");
+			await expect(NFT.performUpkeep(performData)).to.be.revertedWith("Bidding is still open");
 		});
 
 		it("should change bidding status to CLOSED ", async () => {

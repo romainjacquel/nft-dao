@@ -2,8 +2,28 @@ import "@nomicfoundation/hardhat-ethers";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-verify";
 import "dotenv/config";
+import {} from "hardhat";
 import "hardhat-gas-reporter";
+import { task } from "hardhat/config";
 import "solidity-coverage";
+
+task("setBaseUri", "Set the baseURI of the NFT contract")
+	.addParam("uri", "The new baseURI")
+	.addParam("address", "The contract address")
+	.setAction(async ({ uri, address }, hre) => {
+		try {
+			const nft = await hre.ethers.getContractAt("NFT", address);
+
+			await nft.setBaseURI(uri);
+
+			const baseURI = await nft.baseURI();
+
+			console.log("baseURI", baseURI);
+		} catch (e) {
+			console.log({ e });
+			console.log("task failed");
+		}
+	});
 
 module.exports = {
 	defaultNetwork: "hardhat",
@@ -53,5 +73,19 @@ module.exports = {
 	},
 	optmizer: {
 		enabled: true,
+	},
+	tasks: {
+		// Define your custom task here
+		hello: {
+			// Description of the task (optional)
+			description: 'Prints "Hello, world!"',
+
+			// Task implementation
+			task: async () => {
+				console.log("Hello, world!");
+			},
+		},
+
+		// Add more tasks if needed
 	},
 };
