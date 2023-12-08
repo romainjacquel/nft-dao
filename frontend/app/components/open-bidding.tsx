@@ -69,6 +69,7 @@ export const OpenBidding = () => {
 	// Wait for transaction
 	const setBiddingTransaction = useWaitForTransaction({
 		hash: setBidding.data?.hash,
+
 		onError: (error) => {
 			console.log({ error });
 

@@ -220,13 +220,13 @@ contract Bidding is AutomationCompatibleInterface {
         override
         returns (bool upkeepNeeded, bytes memory performData)
     {
-        if (biddingStatus == BiddingStatus.OPEN) {
-            return (true, abi.encodePacked(uint256(0)));
-        } else if (biddingStatus == BiddingStatus.CLOSED) {
-            return (true, abi.encodePacked(uint256(1)));
-        } else {
-            return (false, checkData);
+        if (
+            biddingStatus == BiddingStatus.OPEN ||
+            biddingStatus == BiddingStatus.CLOSED
+        ) {
+            return (true, checkData);
         }
+        return (false, checkData);
     }
 
     /**
@@ -234,10 +234,9 @@ contract Bidding is AutomationCompatibleInterface {
      * @param performData Data obtained from checkUpkeep.
      */
     function performUpkeep(bytes calldata performData) external override {
-        uint256 decodedValue = abi.decode(performData, (uint256));
-        if (decodedValue == 0) {
+        if (biddingStatus == BiddingStatus.OPEN) {
             endBidding();
-        } else if (decodedValue == 1) {
+        } else if (biddingStatus == BiddingStatus.CLOSED) {
             startBidding();
         }
     }

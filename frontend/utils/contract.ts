@@ -772,7 +772,7 @@ export const CONTRACT_ABI = [
 
 export const CONTRACT_ADDRESS = isDevelopment()
 	? "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-	: "0x517c4937F411685745AD88a2369a47f8561401bF";
+	: "0x18Ae9498d1EF36A12e683A5CD3F41570DE664347";
 
 type BaseConfigType = {
 	address: `0x${string}`;
