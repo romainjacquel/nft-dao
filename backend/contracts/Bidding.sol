@@ -27,7 +27,6 @@ contract Bidding is AutomationCompatibleInterface {
         Bidder[] winningBidders
     );
     event SetBiddingLose(uint256 bidAmount, string message);
-    event Refund(address bidderAddress, uint256 bidAmount);
 
     /**
      * @dev Enumeration representing the state of the auction.
@@ -93,14 +92,8 @@ contract Bidding is AutomationCompatibleInterface {
         if (winningBidders.length > 0) {
             for (uint32 i = 0; i < winningBidders.length; i++) {
                 (bool success, ) = payable(winningBidders[i].bidderAddress)
-                    .call{value: winningBidders[i].bidAmount, gas: 30000}("");
+                    .call{value: winningBidders[i].bidAmount}("");
                 require(success, "Transfer failed.");
-                if (success) {
-                    emit Refund(
-                        winningBidders[i].bidderAddress,
-                        winningBidders[i].bidAmount
-                    );
-                }
             }
             delete winningBidders;
         }
@@ -148,17 +141,9 @@ contract Bidding is AutomationCompatibleInterface {
             if (lowestBidder.bidAmount < msg.value) {
                 _isWinningBidder = true;
                 (bool success, ) = payable(lowestBidder.bidderAddress).call{
-                    value: lowestBidder.bidAmount,
-                    gas: 30000
+                    value: lowestBidder.bidAmount
                 }("");
                 require(success, "Transfer failed.");
-                // test
-                if (success) {
-                    emit Refund(
-                        lowestBidder.bidderAddress,
-                        lowestBidder.bidAmount
-                    );
-                }
                 winningBidders[index] = Bidder(msg.sender, msg.value);
             }
         }
