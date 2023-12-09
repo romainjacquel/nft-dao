@@ -44,7 +44,7 @@ export const MintNft = () => {
 	});
 
 	return (
-		<Flex as="div" align="center" justify="center" direction="column" mt={4} gap={4} border="1px solid red">
+		<Flex as="div" align="center" justify="center" direction="column" mt={4} gap={4}>
 			<Heading as="h4" size="md">
 				You are in the winner list, you can mint your NFT
 			</Heading>
