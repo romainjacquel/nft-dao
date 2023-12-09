@@ -23,3 +23,10 @@ cd backend && npm install
 
 # Install frontend dependencies
 cd ../frontend && yarn install
+
+### Test coverage
+
+# Command
+yarn coverage
+
+<img width="509" alt="image" src="https://github.com/romainjacquel/nft-dao/assets/43607419/f2d3859d-80a8-4859-b8ce-77c9245c05b6">
