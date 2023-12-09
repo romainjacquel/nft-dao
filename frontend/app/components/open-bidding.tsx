@@ -61,24 +61,18 @@ export const OpenBidding = () => {
 		value: amount,
 	});
 
-	console.log(amount);
-
 	// Contract write
 	const setBidding = useContractWrite(setBiddingConfig);
 
 	// Wait for transaction
 	const setBiddingTransaction = useWaitForTransaction({
 		hash: setBidding.data?.hash,
-
-		onError: (error) => {
-			console.log({ error });
-
-			return notification?.({
+		onError: () =>
+			notification?.({
 				title: "Error",
 				description: "Impossible to send transaction",
 				status: "error",
-			});
-		},
+			}),
 	});
 
 	// Contract events
@@ -87,8 +81,6 @@ export const OpenBidding = () => {
 		eventName: "SetBiddingWin",
 		listener: ([data]) => {
 			const args = (data as unknown as EventData<SetBiddingWinEvent>).args;
-
-			console.log("set bidding WIN ===>", args);
 
 			setWinners?.(args.winningBidders);
 
@@ -105,8 +97,6 @@ export const OpenBidding = () => {
 		eventName: "SetBiddingLose",
 		listener: ([data]) => {
 			const args = (data as unknown as EventData<SetBiddingLoseEvent>).args;
-
-			console.log("set bidding LOSE ===>", args);
 
 			return notification?.({
 				title: "Warning",

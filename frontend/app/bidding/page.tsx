@@ -7,10 +7,11 @@ import isAuth from "../components/is-auth";
 import { OpenBidding } from "../components/open-bidding";
 import useHasMounted from "../hooks/use-has-mounted";
 import useNotification from "../hooks/use-notification";
+import useWinners from "../hooks/use-winners";
 import { BiddingStatus } from "../types/bidding";
-import { EventData } from "../types/contract-event";
 
 const Bidding = () => {
+	const { setWinners } = useWinners();
 	const hasMounted = useHasMounted();
 	const notification = useNotification();
 	const { data: biddingStatus } = useContractRead({
@@ -19,15 +20,11 @@ const Bidding = () => {
 		watch: true,
 	});
 
-	console.log("biddingStatus", biddingStatus);
-
 	useContractEvent({
 		...baseConfig,
 		eventName: "StartBidding",
-		listener: ([data]) => {
-			const args = (data as unknown as EventData).args;
-
-			console.log(data, args);
+		listener: () => {
+			setWinners?.([]);
 			return notification?.({
 				title: "Success",
 				description: "Bidding is open",
@@ -39,16 +36,12 @@ const Bidding = () => {
 	useContractEvent({
 		...baseConfig,
 		eventName: "EndBidding",
-		listener: ([data]) => {
-			const args = (data as unknown as EventData).args;
-
-			console.log(data, args);
-			return notification?.({
+		listener: () =>
+			notification?.({
 				title: "Success",
 				description: "Bidding is closed",
 				status: "success",
-			});
-		},
+			}),
 	});
 
 	return hasMounted && (biddingStatus === BiddingStatus.OPEN ? <OpenBidding /> : <ClosedBidding />);

@@ -18,9 +18,10 @@ task("setBaseUri", "Set the baseURI of the NFT contract")
 
 			const baseURI = await nft.baseURI();
 
+			// biome-ignore lint/suspicious/noConsoleLog: Usefull log
 			console.log("baseURI", baseURI);
-		} catch (e) {
-			console.log({ e });
+		} catch {
+			// biome-ignore lint/suspicious/noConsoleLog: Usefull log
 			console.log("task failed");
 		}
 	});
@@ -73,19 +74,5 @@ module.exports = {
 	},
 	optmizer: {
 		enabled: true,
-	},
-	tasks: {
-		// Define your custom task here
-		hello: {
-			// Description of the task (optional)
-			description: 'Prints "Hello, world!"',
-
-			// Task implementation
-			task: async () => {
-				console.log("Hello, world!");
-			},
-		},
-
-		// Add more tasks if needed
 	},
 };

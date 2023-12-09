@@ -20,15 +20,12 @@ export const MintNft = () => {
 	// Wait for transaction
 	const mintTransaction = useWaitForTransaction({
 		hash: mint.data?.hash,
-		onError: (error) => {
-			console.log({ error });
-
-			return notification?.({
+		onError: () =>
+			notification?.({
 				title: "Error",
 				description: "Impossible to send transaction",
 				status: "error",
-			});
-		},
+			}),
 	});
 
 	// Contract events
@@ -37,8 +34,6 @@ export const MintNft = () => {
 		eventName: "Mint",
 		listener: ([data]) => {
 			const args = (data as unknown as EventData<MintEvent>).args;
-
-			console.log("set bidding WIN ===>", args);
 
 			return notification?.({
 				title: "Success",
