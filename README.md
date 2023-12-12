@@ -4,7 +4,7 @@ Welcome to the Decentralized Auction Application, a platform managing auctions t
 
 ## Getting Started
 
-Demo link: https://www.loom.com/share/1bc152e53fcd46299d4366caf012e095?sid=cedb6310-1135-4129-88c5-eb99828633a4
+https://www.loom.com/share/4adaf9741f7547a886e2aaf935f19857?sid=453a283e-af44-44f7-8a69-361cca459f42
 
 ### Installation
 
