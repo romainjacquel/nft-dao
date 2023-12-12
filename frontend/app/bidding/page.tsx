@@ -7,11 +7,9 @@ import isAuth from "../components/is-auth";
 import { OpenBidding } from "../components/open-bidding";
 import useHasMounted from "../hooks/use-has-mounted";
 import useNotification from "../hooks/use-notification";
-import useWinners from "../hooks/use-winners";
 import { BiddingStatus } from "../types/bidding";
 
 const Bidding = () => {
-	const { setWinners } = useWinners();
 	const hasMounted = useHasMounted();
 	const notification = useNotification();
 	const { data: biddingStatus } = useContractRead({
@@ -24,7 +22,6 @@ const Bidding = () => {
 		...baseConfig,
 		eventName: "StartBidding",
 		listener: () => {
-			setWinners?.([]);
 			return notification?.({
 				title: "Success",
 				description: "Bidding is open",
