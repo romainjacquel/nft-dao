@@ -18,7 +18,7 @@ import {
 	Thead,
 	Tr,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEthereum } from "react-icons/fa";
 import { formatEther, parseEther } from "viem";
 import {
@@ -114,6 +114,10 @@ export const OpenBidding = () => {
 		},
 		{ heading: "Min bid amount", text: `${minBidAmount ? formatEther(minBidAmount as unknown as bigint) : "0"} ETH` },
 	];
+
+	useEffect(() => {
+		if (setWinners) setWinners([]);
+	}, [setWinners]);
 
 	return (
 		<>
