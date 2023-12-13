@@ -29,7 +29,7 @@ contract NFT is ERC721A, Bidding, Ownable {
      * Initializes ERC721A, Ownable, and Bidding contracts with specific parameters.
      */
     constructor()
-        ERC721A("NFT-DAO2", "NFD")
+        ERC721A("NFT-DAO-DEMO", "NFD")
         Ownable(msg.sender)
         Bidding(1, 45, 1, PRICE_PER_NFT) //3, 120
     {}
